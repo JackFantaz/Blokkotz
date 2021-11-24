@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Blokkotz | doc</title>
+        <style type="text/css">
+
+            body {
+                margin: 0;
+                padding: 40px 80px 40px 80px;
+                background-color: whitesmoke;
+                font-family: Serif;
+                text-align: justify;
+            }
+
+            div {
+                padding: 40px;
+                border-style: solid;
+                border-width: 1px;
+                background-color: white;
+            }
+
+            h1 {
+                margin-top: 0px;
+                margin-bottom: 20px;
+            }
+
+            h2 {
+                margin-top: 20px;
+                margin-bottom: 10px;
+            }
+
+            p {
+                margin-top: 10px;
+                margin-bottom: 0px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div>
+
+            <h1>Blokkotz</h1>
+            <p><em>Blokkotz</em> è un’applicazione 3D liberamente ispirata ai videogiochi arcade 2D <em>Atari Breakout</em> e <em>Taito Arkanoid</em>. Lo scopo del gioco è colpire la pallina con la paletta in modo tale che essa colpisca i blocchetti distruggendoli. Il gioco termina quando tutti i blocchetti sono stati distrutti o quando la pallina esce dalla stanza.</p>
+            <p>I blocchetti sono disposti casualmente nella stanza ogni volta che si incomincia una nuova partita e possono essere fatti d’oro, d’acciaio oppure di legno. In base al materiale, ciascun blocchetto può richiedere da uno a tre colpi prima di distruggersi e ad ogni colpo subito esso cambia materiale in quello di valore immediatamente inferiore. Inoltre, la pallina è in costante accelerazione, rendendo così il gioco sempre più difficile al passare del tempo.</p>
+            <p>La <em>modalità esplorazione</em> consente di navigare liberamente la scena e di scegliere un’angolazione personalizzata dalla quale iniziare il gioco.</p>
+            <p>Per il corretto funzionamento dell’applicazione, è necessario usufruirne tramite un server web.</p>
+            <p><a href="../project/">Vai al gioco</a></p>
+
+            <h2>main.js</h2>
+            <p>Questo file contiene tutti i parametri di configurazione dell’applicazione e la funzione <em>init</em>, che inizializza il programma e avvia il rendering.</p>
+            <p>Il ciclo principale di rendering nella funzione <em>animate</em> suddivide gli aggiornamenti del motore fisico in intervalli di tempo <em>dt</em> di durata prefissata in modo da non perdere aggiornamenti importanti, in particolare collisioni, in caso di rallentamenti o ritardi nell’esecuzione. I rirardi molto lunghi vengono invece considerati come pause e l’applicazione smette momentaneamente di aggiornare il proprio stato.</p>
+
+            <h2>game.js</h2>
+            <p>Questo file contiene la logica strettamente legata al gioco in quanto tale, ovvero gestione dell’inizio e della fine della partita, conteggio dei punti e alterazione dello stato dei blocchetti.</p>
+
+            <h2>physics.js</h2>
+            <p>Questo file contiene tutta la logica fisica dell’applicazione.</p>
+            <p>Le funzioni <em>handleBrickCollision</em> e <em>handleBoxCollision</em> si occupano di gestire i rimbalzi della pallina rispettivamente sui blocchetti e sulle pareti della stanza così come fisicamente ci si aspetterebbe (fatta eccezione per alcuni aggiustamenti empirici in <em>handleBoxCollision</em> per gestire i casi limite). La funzione <em>handlePaddleCollision</em>, che gestisce il rimbalzo della pallina sulla paletta, apporta invece alcune modifiche alla fisica a motivo della giocabilità. In primo luogo, viene favorito il direzionamento della pallina dopo il rimbalzo verso il fondo della stanza anche se l’angolazione naturale la farebbe finire fuori dall’area di gioco. La logica dietro a questa scelta è che se il giocatore riesce a colpire la pallina con la paletta, allora la partita dovrebbe comunque andare avanti. In secondo luogo, la direzione di rimbalzo naturale viene ulteriormente influenzata dalla distanza orientata tra il centro della paletta ed il centro della pallina al momento dell’impatto. Ciò consente al giocatore di dare un effetto al colpo sulla pallina e decidere dove indirizzarla. In pratica, colpendola con il centro della paletta si applica il rimbalzo naturale, mentre più la si colpisce vicino ad un lato della paletta e più la pallina sarà influenzata a muoversi verso quella direzione.</p>
+            <p>I blocchetti si muovono di moto armonico, mentre la pallina si muove di moto rettilineo (a meno dei rimbalzi) uniformemente accelerato. Ogni volta che un oggetto si sposta, viene aggiornata la sua hitbox tramite la funzione <em>bounds</em>. Essa sarà poi utilizzata per riconoscere le collisioni.</p>
+            <p>La funzione <em>movePaddle</em> consente al giocatore di controllare la posizione della paletta. Se in <em>modalità esplorazione</em> si sceglie di iniziare la partita da un’angolazione opposta al verso predefinito, vengono invertiti i controlli di movimento a sinistra e a destra della paletta in modo da fornire un’esperienza di gioco più intuitiva.</p>
+
+            <h2>rendering.js</h2>
+            <p>Questo file contiene tutte le operazioni grafiche 3D in linguaggio <em>JavaScript</em>.</p>
+            <p>La funzione <em>setupScene</em> attende il caricamento asincrono degli shader e compie tutte le operazioni che devono essere svolte una volta sola all’inizio dell’esecuzione tramite <em>doSetupScene</em>. La funzione <em>renderEnvironment</em> svolge le operazioni che devono essere eseguite una volta per ogni ciclo di rendering e la funzione <em>renderObject</em> svolge le operazioni che devono essere compiute per ogni oggetto nella scena ad ogni ciclo.</p>
+            <p>La funzione <em>prepareTexture</em> svolge le operazioni preliminari per ciascuna texture e consente di scegliere se si vuole generare una mipmap e se si desidera che i pixel vengano interpolati. All’oggetto viene applicata una texture di luminanza temporanea nell’attesa che quella vera sia caricata. Se l’oggetto non richiede texture, gliene si applica una di luminanza, unitaria e completamente bianca, per mantenere la compatibilità con gli shader.</p>
+            <p>La funzione <em>renderIllumination</em> imposta i parametri di configurazione della fonte di luce e viene richiamata tramite <em>drawIllumination</em> una volta all’avvio dell’applicazione e poi aggiornata solo quando il gioco è in <em>modalità esplorazione</em>. La fonte di luce è infatti inizialmente posizionata in un punto preciso congeniale per il gioco con la visuale predefinita. Se l’utente preferisce esplorare la stanza e giocare da un’altra posizone, la fonte di luce viene riposizinata in corrispondenza della telecamera per assicurare un’illuminazione adeguata da qualsiasi posizione.</p>
+            <p>La funzione <em>getViewMatrix</em> produce la matrice di vista come inverso della funzione <em>lookAt</em> impostando come suo target un punto a distanza unitaria dalla posizione della telecamera individuato dal parametro <em>cameraFront</em>, la funzione <em>getProjectionMatrix</em> restituisce la matrice di proiezione prospettica con il field-of-view desiderato e la funzione <em>getMovementMatrix</em> viene richiamata una volta per ogni oggetto e ne costituisce la matrice di spostamento iniziale con la traslazione, la rotazione e la scala desiderate.</p>
+
+            <h2>network.js</h2>
+            <p>Questo file include tutto il codice di rete per caricare in modo asincrono gli shader e le mesh e il codice per inizializzare gli oggetti e aggiungerli alla coda di rendering. Il download asincrono è necessario poiché gli shader e le mesh sono memorizzati su file dedicati.</p>
+
+            <h2>interface.js</h2>
+            <p>Questo file espone le funzioni che gestiscono l’HUD in grafica 2D con le informazioni di gioco e i controlli utente su schermo, inclusa la creazione e gestione dei pulsanti virtuali e della croce direzionale per navigare la scena tramite dispositivi touchscreen.</p>
+
+            <h2>navigation.js</h2>
+            <p>Questo file contiene le funzioni necessarie a gestire gli input utente. È possibile giocare mediante mouse e tastiera, touchscreen oppure gamepad.</p>
+            <p>La direzione inquadrata dalla telecamera è gestita tramite gli angoli <em>yaw</em> e <em>pitch</em>, limitati nei loro intervalli di validità dalla funzione <em>ensureValidAngles</em> e convertiti nelle coordinate di un punto su una sfera a raggio unitario tramite la funzione <em>updateCameraOrientation</em>. Questa direzione di vista determina anche il piano lungo il quale si può navigare la scena tramite i controlli che spostano la telecamera in <em>modalità esplorazione</em>.</p>
+            <p>Sono stati mantenuti attivi, poiché comodi all’atto pratico, i comandi extra di debug che consentono di cambiare il field-of-view mediante la rotella del mouse o i pulsanti <em>A</em> e <em>Y</em> del gamepad e quelli che permettono di spostarsi lungo la direzione ortogonale al piano di movimento tramite i tasti <em>Q</em> ed <em>E</em> o i grilletti dorsali del controller.</p>
+
+            <h2>vertex.vsh e fragment.fsh</h2>
+            <p>Questi sono il vertex shader e il fragment shader principali dell’applicazione. Essi prevedono una singola fonte di luce puntiforme per la scena e permettono di scegliere tra lo shading di Phong e quello di Gouraud tramite il parametro <em>u_mode</em>.</p>
+            <p>Per ogni oggetto sono previsti un colore di base ed una texture, i cui effetti sul colore finale di ciascun pixel sono sovrapposti. Se non si è interessati a una componente, è possibile impostarla a bianco per ignorarne gli effetti. Il colore finale dell’oggetto così ottenuto influisce sulla componente ambientale della luce, su quella diffusa e nel caso dello shader di Gouraud anche su quella speculare. Nel caso dello shader di Phong, la componente speculare dipende invece unicamente dal colore della luce, così da ottenere un’illuminazione più piacevole.</p>
+
+            <h2>Mesh poligonali *.obj</h2>
+            <p>Tutte le mesh utilizzate sono in formato <em>Wavefront OBJ</em> e sono state create mediante <em>Blender</em>. I file includono anche le normali ai vertici e le coordinate texture da utilizzare, anch’esse impostate tramite <em>Blender</em>. Per semplificarne il caricamento sull’applicazione, tutte le facce sono state preventivamente triangolate. Le descrizioni dei materiali da utilizzare sono invece elencate direttamente nell’applicazione.</p>
+            <p>Si segnala in particolare il file denominato <em>room.obj</em> che modella la stanza in cui rimbalza la pallina. Esso contiene una mesh degenere con una faccia assente e le normali calcolate verso l’interno in modo da permettere al giocatore di vedere il contenuto della stanza da qualsiasi posizione tramite backface-culling, ottenendo così una sorta di frontface-culling.</p>
+
+            <h2>Skybox</h2>
+            <p>Le funzioni <em>prepareSkybox</em>, <em>doPrepareSkyBox</em> e <em>renderSkybox</em> nel file <em>rendering.js</em> si occupano del disegno dello skybox avvalendosi di un programma shader ausiliario ricavato dai file <em>skybox.vsh</em> e <em>skybox.fsh</em>.</p>
+            <p>Lo skybox è realizzato come una texture cubemap posizionata in modo fisso alla massima distanza possibile dalla telecamera. Ad ogni ciclo di rendering, al momento di disegnare lo skybox, vengono memorizzati i parametri dello shader program principale, viene eseguito il programma dello skybox con i propri parametri e vengono infine ripristinati i parametri originali.</p>
+
+        </div>
+    </body>
+</html>

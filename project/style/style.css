@@ -1,0 +1,48 @@
+body {
+    margin: 0;
+    padding: 5px;
+    background-color: whitesmoke;
+    font-family: Serif;
+    text-align: justify;
+}
+
+div {
+    position: relative;
+    float: left;
+    margin: 5px;
+    border-style: solid;
+    border-width: 1px;
+    background-color: white;
+}
+
+canvas {
+    position: absolute;
+    background-color: transparent;
+    outline: none;
+}
+
+h1 {
+    margin-top: 0px;
+    margin-bottom: 15px;
+}
+
+h2 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+p {
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
+#application {
+    width: 720px;
+    height: 720px;
+}
+
+#controls {
+    width: 480px;
+    min-height: 700px;
+    padding: 10px;
+}
